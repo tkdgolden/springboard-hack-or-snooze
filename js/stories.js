@@ -24,6 +24,7 @@ function generateStoryMarkup(story) {
 
   const hostName = story.getHostName();
 
+  // separate logic for if the star should be filled if it is in the current user's favorites list
   if(currentUser) {
     if (currentUser.favorites.find(e => e.storyId === story.storyId)) {
       return $(`
@@ -71,6 +72,10 @@ async function putStoriesOnPage() {
 
 $storyForm.on("submit", submitStory)
 
+
+/** completed submit story form creates a story object, pushes the object to the current user's ownstories list locally and on the api, then refreshes the page to show the updated story list
+ * 
+ */
 async function submitStory() {
   console.debug("submitStory")
   const author = $("#author").val()
@@ -85,6 +90,10 @@ async function submitStory() {
 
 $allStoriesList.on("click", ".fa-star", toggleFavorite)
 
+/** when a star is clicked, either add or remove the indicated story from favorite list and toggle the star
+ * 
+ * @param {event} evt object of click event, contains the element that was clicked on
+ */
 function toggleFavorite(evt) {
   const storyId = evt.target.parentElement.id
   const story = storyList.findStory(storyId)
@@ -98,6 +107,11 @@ function toggleFavorite(evt) {
 
 $allStoriesList.on("click", ".fa-trash-alt", remove)
 
+
+/** when a trash can is clicked, remove the indicated story from the api, the current user's local ownstories list, and remove the element from the dom
+ * 
+ * @param {event} evt object of click event, contains the element that was clicked on
+ */
 async function remove(evt) {
   const storyId = evt.target.parentElement.id
   storyList.removeStory(storyId)

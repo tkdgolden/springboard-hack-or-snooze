@@ -13,7 +13,7 @@ function submitClick(evt) {
 
 /** Show main list of all stories when click site name */
 
-function navAllStories(evt) {
+function navAllStories() {
   console.debug("navAllStories");
   hidePageComponents();
   putStoriesOnPage();
@@ -23,7 +23,7 @@ $body.on("click", "#nav-all", navAllStories);
 
 /** Show login/signup on click on "login" */
 
-function navLoginClick(evt) {
+function navLoginClick() {
   console.debug("navLoginClick");
   hidePageComponents();
   $loginForm.show();
@@ -44,12 +44,15 @@ function updateNavOnLogin() {
 
 $navFavorites.on("click", navFavoritesClick)
 
-function navFavoritesClick(evt) {
+/** clicking favorites tab only displays stories that are in the current user's favorites list
+ * 
+ */
+function navFavoritesClick() {
   console.debug("navFavoritesClick")
 
   $allStoriesList.empty();
 
-  // loop through all of our stories and generate HTML for them
+  // loop through all of our stories that match current user favorites and generate HTML for them
   for (let story of storyList.stories) {
     if (currentUser.favorites.find(e => e.storyId === story.storyId)) {
       const $story = generateStoryMarkup(story);
@@ -62,7 +65,10 @@ function navFavoritesClick(evt) {
 
 $navMy.on("click", navMyClick)
 
-function navMyClick(evt) {
+/** clicking my stories tab only displays stories in the current user's ownStories list
+ * 
+ */
+function navMyClick() {
   console.debug("navMyClick")
 
   $allStoriesList.empty();
