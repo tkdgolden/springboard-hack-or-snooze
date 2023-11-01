@@ -25,7 +25,9 @@ class Story {
 
   getHostName() {
     // UNIMPLEMENTED: complete this function!
-    return "hostname.com";
+    const urlObject = new URL(this.url)
+    
+    return urlObject.hostname
   }
 }
 
@@ -79,7 +81,8 @@ class StoryList {
       method: "POST",
       data: {"token": user.loginToken, "story": {"author": newStory.author, "title": newStory.title, "url": newStory.url}}
     })
-    const thisStory = new Story(response.data.story.storyId, response.data.story.title, response.data.story.author, response.data.story.url, response.data.story.username, response.data.story.createdAt)    
+    const thisStory = response.data.story
+    this.stories.push(thisStory)
     return thisStory
   }
 
@@ -89,6 +92,18 @@ class StoryList {
         return each
       }
     }
+  }
+
+  async removeStory(storyId) {
+    console.debug("removeStory")
+
+    const response = await axios({
+      url: `${BASE_URL}/stories/${storyId}`,
+      method: "DELETE", 
+      data: {"token": currentUser.loginToken}
+    })
+
+
   }
 }
 
@@ -208,6 +223,10 @@ class User {
     }
   }
 
+  addMyStory(story) {
+    currentUser.ownStories.push(story)
+  }
+
   async addFavorite(story) {
     currentUser.favorites.push(story)
 
@@ -219,15 +238,16 @@ class User {
   }
 
   async removeFavorite(story) {
-    console.log(currentUser.favorites)
-    console.log(story.storyId)
     currentUser.favorites = currentUser.favorites.filter(e => e.storyId != story.storyId)
-    console.log(currentUser.favorites)
 
     await axios({
       url: `${BASE_URL}/users/${currentUser.username}/favorites/${story.storyId}`,
       method: "DELETE",
       params: {"token": this.loginToken}
     })
+  }
+
+  removeMyStory(storyId) {
+    currentUser.favorites = currentUser.favorites.filter(e => e.storyId != storyID)
   }
 }

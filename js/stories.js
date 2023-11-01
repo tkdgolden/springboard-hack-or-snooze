@@ -20,7 +20,7 @@ async function getAndShowStoriesOnStart() {
  */
 
 function generateStoryMarkup(story) {
-  // console.debug("generateStoryMarkup", story);
+  console.debug("generateStoryMarkup");
 
   const hostName = story.getHostName();
 
@@ -30,8 +30,8 @@ function generateStoryMarkup(story) {
         <li id="${story.storyId}">
           <i class="fas fa-star"></i>
           <a href="${story.url}" target="a_blank" class="story-link">${story.title}</a>
-          <small class="story-hostname">(${hostName})</small>
-          <small class="story-author">by ${story.author}</small>
+          <small class="story-hostname">(${hostName})</small><br>
+          <small class="story-author">by ${story.author}</small><br>
           <small class="story-user">posted by ${story.username}</small>
         </li>
       `)
@@ -44,8 +44,8 @@ function generateStoryMarkup(story) {
         <a href="${story.url}" target="a_blank" class="story-link">
           ${story.title}
         </a>
-        <small class="story-hostname">(${hostName})</small>
-        <small class="story-author">by ${story.author}</small>
+        <small class="story-hostname">(${hostName})</small><br>
+        <small class="story-author">by ${story.author}</small><br>
         <small class="story-user">posted by ${story.username}</small>
       </li>
     `);
@@ -53,7 +53,9 @@ function generateStoryMarkup(story) {
 
 /** Gets list of stories from server, generates their HTML, and puts on page. */
 
-function putStoriesOnPage() {
+async function putStoriesOnPage() {
+  storyList = await StoryList.getStories();
+
   console.debug("putStoriesOnPage");
 
   $allStoriesList.empty();
@@ -69,20 +71,19 @@ function putStoriesOnPage() {
 
 $storyForm.on("submit", submitStory)
 
-function submitStory() {
+async function submitStory() {
   console.debug("submitStory")
   const author = $("#author").val()
   const title = $("#title").val()
   const url = $("#url").val()
-
-  storyList.addStory(currentUser, { title, author, url })
-
+  const thisStory = await storyList.addStory(currentUser, { title, author, url })
+  currentUser.addMyStory(await thisStory)
   putStoriesOnPage()
 
   $storyForm.hide()
 }
 
-$favoritesButtons.on("click", "i", toggleFavorite)
+$allStoriesList.on("click", ".fa-star", toggleFavorite)
 
 function toggleFavorite(evt) {
   const storyId = evt.target.parentElement.id
@@ -93,4 +94,13 @@ function toggleFavorite(evt) {
     currentUser.addFavorite(story)
   }
   $(evt.target).toggleClass("far fas")
+}
+
+$allStoriesList.on("click", ".fa-trash-alt", remove)
+
+async function remove(evt) {
+  const storyId = evt.target.parentElement.id
+  storyList.removeStory(storyId)
+  currentUser.removeMyStory(storyId)
+  $(evt.target.parentElement).remove()
 }

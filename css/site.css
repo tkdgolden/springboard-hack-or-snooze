@@ -31,6 +31,9 @@ a:hover {
 
 
 /* Site layout */
+body {
+  background-image: linear-gradient(to right, rgb(141, 147, 249), rgb(195, 151, 248), rgb(141, 147, 249));
+}
 
 /* This is the basic box that the main part of the page goes into */
 .container {

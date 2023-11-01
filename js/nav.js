@@ -14,7 +14,7 @@ function submitClick(evt) {
 /** Show main list of all stories when click site name */
 
 function navAllStories(evt) {
-  console.debug("navAllStories", evt);
+  console.debug("navAllStories");
   hidePageComponents();
   putStoriesOnPage();
 }
@@ -24,7 +24,7 @@ $body.on("click", "#nav-all", navAllStories);
 /** Show login/signup on click on "login" */
 
 function navLoginClick(evt) {
-  console.debug("navLoginClick", evt);
+  console.debug("navLoginClick");
   hidePageComponents();
   $loginForm.show();
   $signupForm.show();
@@ -58,4 +58,19 @@ function navFavoritesClick(evt) {
   }
   $allStoriesList.show();
 
+}
+
+$navMy.on("click", navMyClick)
+
+function navMyClick(evt) {
+  console.debug("navMyClick")
+
+  $allStoriesList.empty();
+  // loop through all of our stories and generate HTML for them
+  for (let story of currentUser.ownStories) {
+    const $story = generateStoryMarkup(story);
+    $($story).prepend("<i class='fas fa-trash-alt'></i>")
+    $allStoriesList.append($story);
+  }
+  $allStoriesList.show();
 }
